@@ -69,8 +69,7 @@ def get_merged_dataongrossprofls(filters,si_list):
             workdaysinmth.append(temparr)
             i=i+1
             lastwkdayincurrper = x[0]
-
-    #datamg = get_corrdataingplist(si_list,workdaysinmth,lastwkdayincurrper,filters)
+    #print(workdaysinmth)
     
     datamg = get_corrdataingplistwithcstcnt(si_list,workdaysinmth,lastwkdayincurrper,filters)
 
@@ -128,15 +127,7 @@ def get_corrdataingplist(lstdata,workdaysinmth,lastwkdayincurrper,filters):
                 cumsalesmtd2 += row["base_net_amount"]  
                 dategrossprf2 += row["gross_profit_percent"]
                 stopt = dayno2
-                #print("stopt0")
-                #print(stopt)
-                #print("Sales date " + str(salesdate) + " " + str(dayno1)  + " " + str(dayno2) )
-            #if ( (row["indent"]==0.0) and (int(prevdateyr) == prevyr) and (dayno1 < dayno2) and (dayno2 > stopt) ):
-            #    cumnoofinv2 += 1
-            #    cumsales2 += row["base_net_amount"]
-            #    cumsalesmtd2 += row["base_net_amount"]  
-            #    dategrossprf2 += row["gross_profit_percent"]
-            #    stopt = dayno2
+                
             #check for last lines that maybe left after loop and sum up
             if ( (row["indent"]==0.0) and (int(prevdateyr) == prevyr) and (dayno1 == lastwkdayincurrper) and (dayno2 > dayno1)):
                 cumnoofinv2 += 1
@@ -197,12 +188,24 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     prevyr = 0
     cumsalesmtd1 = 0
     cumsalesmtd2 = 0
+    grossprfmtd1 = 0.0
+    grossprfmtd2 = 0.0
+    cumgrossprfmtd1 = 0.0
+    cumgrossprfmtd2 = 0.0
+    daysoftxns1 = 0
+    daysoftxns2 = 0
+    
 
     cumsales3 = []
     cumnoofinv3 = []
     cumsalesmtd3 = []
     dategrossprf3 = []
-    cumgrossavg3 = [] 
+    cumgrossavg3 = []
+
+    cumgrossmtd3 = []
+    daysoftxns3 = []
+    cumgrossprfmtd3 = []
+    grossprfmtd3 = [] 
     #cumsales4 = []
     #cumnoofinv4 = []
     #cumsalesmtd4 = []
@@ -215,6 +218,11 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
         cumsalesmtd3.append(0)
         dategrossprf3.append(0.0)
         cumgrossavg3.append(0)
+
+        cumgrossmtd3.append(0)
+        daysoftxns3.append(0)
+        cumgrossprfmtd3.append(0)
+        grossprfmtd3.append(0)
         #cumsales4.append(0)
         #cumnoofinv4.append(0)
         #cumsalesmtd4.append(0)
@@ -231,7 +239,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     for y in workdaysinmth:
         salesday = y[0]
         salesdate = datetime.datetime(curryr, month_number, salesday)
-        prevsalesdate = datetime.datetime(prevyr, month_number, salesday)
+        #prevsalesdate = datetime.datetime(prevyr, month_number, prevsalesday)
         salesdayinwords = salesdate.strftime("%A")
         cumnoofinv1 = 0
         cumsales1 = 0
@@ -291,7 +299,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 cumsalesmtd2 += row["base_net_amount"]  
                 dategrossprf2 += row["gross_profit_percent"]
                 stopt = dayno2
-
+            
 
                 #for i in range(cclength):
                 #    if(cstcnt[i] == row["cost_center"]): 
@@ -326,14 +334,28 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
 
         if ((cumnoofinv1 > 0) or (cumnoofinv2>0)) : 
         #if ((cumnoofinv1 > 0)) :
+            if (cumnoofinv1>0) :
+                cumgrossprfmtd1 += cumgrossavg1
+                daysoftxns1 += 1
+                grossprfmtd1 = cumgrossprfmtd1/daysoftxns1
+            if (cumnoofinv2>0) :
+                cumgrossprfmtd2 += cumgrossavg2
+                daysoftxns2 += 1
+                grossprfmtd2 = cumgrossprfmtd2/daysoftxns2
+
             cstdict = {"date":salesdate,"day":salesdayinwords}   
-            data5.append({"date":salesdate,"day":salesdayinwords,"noofinv":cumnoofinv1,"sales":cumsales1,"salesmtd":cumsalesmtd1,"gross":cumgrossavg1,"noofinv2":cumnoofinv2,"sales2":cumsales2,"salesmtd2":cumsalesmtd2,"gross2":cumgrossavg2})
+            data5.append({"date":salesdate,"day":salesdayinwords,"noofinv":cumnoofinv1,"sales":cumsales1,"salesmtd":cumsalesmtd1,"gross":cumgrossavg1,"grossmtd":grossprfmtd1,"noofinv2":cumnoofinv2,"sales2":cumsales2,"salesmtd2":cumsalesmtd2,"gross2":cumgrossavg2,"grossmtd2":grossprfmtd2})
             if ((cumnoofinv1 > 0)) :
                 for i in range(cclength):
                     cstdict["noofinvcstcnt" + str(i)] = cumnoofinv3[i]
                     cstdict["salescstcnt" + str(i)] = cumsales3[i]
                     cstdict["salesmtdcstcnt" + str(i)] = cumsalesmtd3[i]
                     cstdict["grosscstcnt" + str(i)] = cumgrossavg3[i]
+                    if (cumgrossavg3[i]!=0.0) :
+                        cumgrossprfmtd3[i] += cumgrossavg3[i]
+                        daysoftxns3[i] += 1
+                        grossprfmtd3[i] = cumgrossprfmtd3[i]/daysoftxns3[i]
+                    cstdict["grossmtdcstcnt" + str(i)] = grossprfmtd3[i]
 
                     #cstdict["noofinvcstcntprv" + str(i)] = cumnoofinv4[i]
                     #cstdict["salescstcntprv" + str(i)] = cumsales4[i]
@@ -345,6 +367,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     #print(data6)
     #return data5 
     return datall 
+
 
 def get_columns(filters):
     long_month_name = filters.get("month")
@@ -385,6 +408,13 @@ def get_columns(filters):
             "width": 90,
         },
         {
+            "label": _("Gross % MTD"),
+            "fieldname": "grossmtd",
+            "fieldtype": "Float",
+            "convertible": "qty",
+            "width": 90,
+        },
+        {
             "label": _("# of Invoices(" + month_short + ", " + str(prevyr) + ")"),
             "fieldname": "noofinv2",
             "fieldtype": "Integer",
@@ -410,6 +440,13 @@ def get_columns(filters):
         {
             "label": _("Gross % (" + month_short + ", " + str(prevyr) + ")"),
             "fieldname": "gross2",
+            "fieldtype": "Float",
+            "convertible": "qty",
+            "width": 90,
+        },
+        {
+            "label": _("Gross % (" + month_short + ", " + str(prevyr) + ")"),
+            "fieldname": "grossmtd2",
             "fieldtype": "Float",
             "convertible": "qty",
             "width": 90,
