@@ -102,6 +102,8 @@ def get_corrdataingplist(lstdata,workdaysinmth,lastwkdayincurrper,filters):
         cumgrossavg2 = 0
         dategrossprf = 0.0
         dategrossprf2 = 0.0
+        dategrossprfamt = 0.0
+        dategrossprfamt2 = 0.0
         for row in lstdata:
             dayno1 = 1
             if ( (row["indent"]==0.0) and ((row["posting_date"]).strftime("%Y-%m-%d")==salesdate.strftime("%Y-%m-%d"))):
@@ -109,6 +111,7 @@ def get_corrdataingplist(lstdata,workdaysinmth,lastwkdayincurrper,filters):
                 cumsales1 += row["base_net_amount"]
                 cumsalesmtd1 += row["base_net_amount"] 
                 dategrossprf += row["gross_profit_percent"]
+                dategrossprfamt += row["gross_profit"]
                 dayno_object1 = datetime.datetime.strptime(str(row["posting_date"]), "%Y-%m-%d")
                 dayno_object = dayno_object1.strftime("%d")
                 dayno1 = int(str.lstrip(dayno_object))
@@ -126,6 +129,7 @@ def get_corrdataingplist(lstdata,workdaysinmth,lastwkdayincurrper,filters):
                 cumsales2 += row["base_net_amount"]
                 cumsalesmtd2 += row["base_net_amount"]  
                 dategrossprf2 += row["gross_profit_percent"]
+                dategrossprfamt2 += row["gross_profit"]
                 stopt = dayno2
                 
             #check for last lines that maybe left after loop and sum up
@@ -134,6 +138,7 @@ def get_corrdataingplist(lstdata,workdaysinmth,lastwkdayincurrper,filters):
                 cumsales2 += row["base_net_amount"]
                 cumsalesmtd2 += row["base_net_amount"]  
                 dategrossprf2 += row["gross_profit_percent"]
+                dategrossprfamt2 += row["gross_profit"]
                 stopt = dayno2
             try:        
                 cumgrossavg2 = dategrossprf2/cumnoofinv2 
@@ -190,11 +195,15 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     cumsalesmtd2 = 0
     grossprfmtd1 = 0.0
     grossprfmtd2 = 0.0
+    grossprfmtdcum1 = 0.0
+    grossprfmtdcum2 = 0.0
     cumgrossprfmtd1 = 0.0
     cumgrossprfmtd2 = 0.0
     daysoftxns1 = 0
     daysoftxns2 = 0
     
+    grossprfamt1 = 0.0
+    grossprfamt2 = 0.0
 
     cumsales3 = []
     cumnoofinv3 = []
@@ -202,10 +211,15 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     dategrossprf3 = []
     cumgrossavg3 = []
 
+    dategrossprfamt3 = []
+
     cumgrossmtd3 = []
     daysoftxns3 = []
     cumgrossprfmtd3 = []
     grossprfmtd3 = [] 
+
+    grossprfamt3 = []
+    grossprfmtdcum3 = []
     #cumsales4 = []
     #cumnoofinv4 = []
     #cumsalesmtd4 = []
@@ -222,7 +236,12 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
         cumgrossmtd3.append(0)
         daysoftxns3.append(0)
         cumgrossprfmtd3.append(0)
-        grossprfmtd3.append(0)
+        grossprfmtd3.append(0.0)
+
+        grossprfamt3.append(0)
+
+        dategrossprfamt3.append(0)
+        grossprfmtdcum3.append(0.0)
         #cumsales4.append(0)
         #cumnoofinv4.append(0)
         #cumsalesmtd4.append(0)
@@ -249,12 +268,16 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
         cumgrossavg2 = 0
         dategrossprf = 0.0
         dategrossprf2 = 0.0
+
+        dategrossprfamt = 0.0
+        dategrossprfamt2 = 0.0
         for i in range(cclength):
             cumsales3[i] = 0
             cumnoofinv3[i] = 0
             cumgrossavg3[i] = 0
             dategrossprf3[i]= 0.0
 
+            dategrossprfamt3[i]= 0.0
             #cumsales4[i] = 0
             #cumnoofinv4[i] = 0
             #cumgrossavg4[i] = 0
@@ -267,6 +290,10 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 cumsales1 += row["base_net_amount"]
                 cumsalesmtd1 += row["base_net_amount"] 
                 dategrossprf += row["gross_profit_percent"]
+
+                dategrossprfamt += row["gross_profit"]
+                grossprfmtdcum1 += row["gross_profit"]
+                
                 dayno_object1 = datetime.datetime.strptime(str(row["posting_date"]), "%Y-%m-%d")
                 dayno_object = dayno_object1.strftime("%d")
                 dayno1 = int(str.lstrip(dayno_object))
@@ -277,15 +304,19 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                         cumsales3[i] += row["base_net_amount"]
                         cumsalesmtd3[i] += row["base_net_amount"]
                         dategrossprf3[i] += row["gross_profit_percent"]
-            try:        
-                cumgrossavg1 = dategrossprf/cumnoofinv1 
-            except ZeroDivisionError:
-                cumgrossavg1 = 0 
+
+                        dategrossprfamt3[i] += row["gross_profit"]
+                        grossprfmtdcum3[i] += row["gross_profit"]
+
+            #try:        
+            #    cumgrossavg1 = dategrossprf/cumnoofinv1 
+            #except ZeroDivisionError:
+            #    cumgrossavg1 = 0 
             
-            for i in range(cclength):
-                cumgrossavg3[i] = 0
-                if (dategrossprf3[i]!=0):
-                    cumgrossavg3[i] = dategrossprf3[i]/cumnoofinv3[i] 
+            #for i in range(cclength):
+            #    cumgrossavg3[i] = 0
+            #    if (dategrossprf3[i]!=0):
+            #        cumgrossavg3[i] = dategrossprf3[i]/cumnoofinv3[i] 
            
                 
 
@@ -300,6 +331,8 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 dategrossprf2 += row["gross_profit_percent"]
                 stopt = dayno2
             
+                dategrossprfamt2 += row["gross_profit"]
+                grossprfmtdcum2 += row["gross_profit"]
 
                 #for i in range(cclength):
                 #    if(cstcnt[i] == row["cost_center"]): 
@@ -316,32 +349,54 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 dategrossprf2 += row["gross_profit_percent"]
                 stopt = dayno2
 
+                dategrossprfamt2 += row["gross_profit"]
+                grossprfmtdcum2 += row["gross_profit"]
+
                 #for i in range(cclength):
                 #    if(cstcnt[i] == row["cost_center"]): 
                 #        cumnoofinv4[i] += 1
                 #        cumsales4[i] += row["base_net_amount"]
                 #        cumsalesmtd4[i] += row["base_net_amount"]
                 #        dategrossprf4[i] += row["gross_profit_percent"]
-            try:        
-                cumgrossavg2 = dategrossprf2/cumnoofinv2 
-            except ZeroDivisionError:
-                cumgrossavg2 = 0   
+            #try:        
+            #    cumgrossavg2 = dategrossprf2/cumnoofinv2 
+            #except ZeroDivisionError:
+            #    cumgrossavg2 = 0   
 
             #for i in range(cclength):
             #    cumgrossavg4[i] = 0
             #    if (dategrossprf4[i]!=0):
             #        cumgrossavg4[i] = dategrossprf4[i]/cumnoofinv4[i]    
+        
+        try:        
+            cumgrossavg1 = (dategrossprfamt/cumsales1)*100 
+        except ZeroDivisionError:
+            cumgrossavg1 = 0
 
+        try:        
+            cumgrossavg2 = (dategrossprfamt2/cumsales2)*100 
+        except ZeroDivisionError:
+            cumgrossavg2 = 0     
+
+        for i in range(cclength):
+            cumgrossavg3[i] = 0
+            if (dategrossprfamt3[i]!=0):
+                cumgrossavg3[i] = (dategrossprfamt3[i]/cumsales3[i])*100
+            
+            
+        grossprfmtd1 = (grossprfmtdcum1/cumsalesmtd1)*100
+        grossprfmtd2 = (grossprfmtdcum2/cumsalesmtd2)*100
+        
         if ((cumnoofinv1 > 0) or (cumnoofinv2>0)) : 
         #if ((cumnoofinv1 > 0)) :
             if (cumnoofinv1>0) :
                 cumgrossprfmtd1 += cumgrossavg1
                 daysoftxns1 += 1
-                grossprfmtd1 = cumgrossprfmtd1/daysoftxns1
+                #grossprfmtd1 = cumgrossprfmtd1/daysoftxns1
             if (cumnoofinv2>0) :
                 cumgrossprfmtd2 += cumgrossavg2
                 daysoftxns2 += 1
-                grossprfmtd2 = cumgrossprfmtd2/daysoftxns2
+                #grossprfmtd2 = cumgrossprfmtd2/daysoftxns2
 
             cstdict = {"date":salesdate,"day":salesdayinwords}   
             data5.append({"date":salesdate,"day":salesdayinwords,"noofinv":cumnoofinv1,"sales":cumsales1,"salesmtd":cumsalesmtd1,"gross":cumgrossavg1,"grossmtd":grossprfmtd1,"noofinv2":cumnoofinv2,"sales2":cumsales2,"salesmtd2":cumsalesmtd2,"gross2":cumgrossavg2,"grossmtd2":grossprfmtd2})
@@ -351,10 +406,17 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                     cstdict["salescstcnt" + str(i)] = cumsales3[i]
                     cstdict["salesmtdcstcnt" + str(i)] = cumsalesmtd3[i]
                     cstdict["grosscstcnt" + str(i)] = cumgrossavg3[i]
+                    try:
+                        grossprfmtd3[i] = (grossprfmtdcum3[i]/cumsalesmtd3[i])*100
+                    except ZeroDivisionError:
+                        grossprfmtd3[i] = grossprfmtd3[i]
+                        
                     if (cumgrossavg3[i]!=0.0) :
                         cumgrossprfmtd3[i] += cumgrossavg3[i]
                         daysoftxns3[i] += 1
-                        grossprfmtd3[i] = cumgrossprfmtd3[i]/daysoftxns3[i]
+
+                        #grossprfmtd3[i] = (grossprfmtdcum3[i]/cumsalesmtd3[i])*100
+                        #grossprfmtd3[i] = cumgrossprfmtd3[i]/daysoftxns3[i]
                     cstdict["grossmtdcstcnt" + str(i)] = grossprfmtd3[i]
 
                     #cstdict["noofinvcstcntprv" + str(i)] = cumnoofinv4[i]
