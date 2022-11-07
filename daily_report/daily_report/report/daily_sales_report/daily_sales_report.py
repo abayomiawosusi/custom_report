@@ -383,10 +383,15 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
             if (dategrossprfamt3[i]!=0):
                 cumgrossavg3[i] = (dategrossprfamt3[i]/cumsales3[i])*100
             
-            
-        grossprfmtd1 = (grossprfmtdcum1/cumsalesmtd1)*100
-        grossprfmtd2 = (grossprfmtdcum2/cumsalesmtd2)*100
-        
+        try:    
+            grossprfmtd1 = (grossprfmtdcum1/cumsalesmtd1)*100
+        except ZeroDivisionError:
+            grossprfmtd1 = grossprfmtd1
+        try:
+            grossprfmtd2 = (grossprfmtdcum2/cumsalesmtd2)*100
+        except ZeroDivisionError:
+            grossprfmtd2 = grossprfmtd2
+
         if ((cumnoofinv1 > 0) or (cumnoofinv2>0)) : 
         #if ((cumnoofinv1 > 0)) :
             if (cumnoofinv1>0) :
