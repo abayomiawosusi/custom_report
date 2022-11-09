@@ -161,6 +161,12 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
     # change the order of cost center this is customized for this client
     #specify order here 02, 03, 01, 06
     #cstorder = []
+    if filters.cost_center:
+        cstcnt0.clear()
+        ccc = filters.cost_center
+        for cc in ccc:
+            cstcnt0.append(cc)
+
     cstorder = ['02', '03', '06', '01']
     
     i = 0
@@ -342,7 +348,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 #        dategrossprf4[i] += row["gross_profit_percent"]
                 #print("stopt0")
             #check for last lines that maybe left after loop and sum up
-            if ( (row["indent"]==0.0) and (int(prevdateyr) == prevyr) and (dayno1 == lastwkdayincurrper) and (dayno2 > dayno1)):
+            elif ( (row["indent"]==0.0) and (int(prevdateyr) == prevyr) and (dayno1 == lastwkdayincurrper) and (dayno2 > dayno1)):
                 cumnoofinv2 += 1
                 cumsales2 += row["base_net_amount"]
                 cumsalesmtd2 += row["base_net_amount"]  
@@ -405,6 +411,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
 
             cstdict = {"date":salesdate,"day":salesdayinwords}   
             data5.append({"date":salesdate,"day":salesdayinwords,"noofinv":cumnoofinv1,"sales":cumsales1,"salesmtd":cumsalesmtd1,"gross":cumgrossavg1,"grossmtd":grossprfmtd1,"noofinv2":cumnoofinv2,"sales2":cumsales2,"salesmtd2":cumsalesmtd2,"gross2":cumgrossavg2,"grossmtd2":grossprfmtd2})
+            #data5.append({"date":salesdate,"day":salesdayinwords,"noofinv":cumnoofinv1,"sales":cumsales1,"salesmtd":cumsalesmtd1,"gross":dategrossprfamt,"grossmtd":grossprfmtd1,"noofinv2":cumnoofinv2,"sales2":cumsales2,"salesmtd2":cumsalesmtd2,"gross2":dategrossprfamt2,"grossmtd2":grossprfmtd2})
             if ((cumnoofinv1 > 0)) :
                 for i in range(cclength):
                     cstdict["noofinvcstcnt" + str(i)] = cumnoofinv3[i]
@@ -431,7 +438,7 @@ def get_corrdataingplistwithcstcnt(lstdata,workdaysinmth,lastwkdayincurrper,filt
                 data6.append(cstdict)    
                 
     datall=[data5,data6,cstcnt]
-    #print(data6)
+    print(lstdata)
     #return data5 
     return datall 
 
@@ -779,6 +786,8 @@ class GrossProfitGenerator(object):
         conditions = ""
         if self.filters.company:
             conditions += " and company = %(company)s"
+        if self.filters.get("cost_center"):
+            conditions += " and `tabSales Invoice Item`.cost_center IN %(cost_center)s"    
         if self.filters.month:
             long_month_name = self.filters.get("month")
             datetime_object = datetime.datetime.strptime(long_month_name, "%B")

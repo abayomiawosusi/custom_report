@@ -41,6 +41,16 @@ frappe.query_reports["Daily Sales Report"] = {
 			"default": new Date().getFullYear(),
 			"mandatory": 0,
 			"wildcard_filter": 0
+		   },
+		   {
+			   fieldname: "cost_center",
+			   label: __("Cost Center"),
+			   fieldtype: "MultiSelectList",
+			   options: "Cost Center",
+			   reqd:0,				
+			   get_data: function(txt) {				
+				   return frappe.db.get_link_options("Cost Center", txt);
+			   }
 		   }
 	],
 	onload: function(report) {		
